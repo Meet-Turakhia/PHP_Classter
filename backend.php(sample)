@@ -1,0 +1,9 @@
+<?php 
+$localhost = "localhost";
+$username = "your user name";
+$password = "your password";
+$db_name = "your database name";
+
+$mysqli = NEW mysqli($localhost, $username, $password, $db_name);
+
+?>

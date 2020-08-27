@@ -1,0 +1,57 @@
+* {
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Varela Round", sans-serif;
+}
+
+body{
+  background-color: #e6e6e6 !important;
+}
+
+.navbar{
+  background-color:#fff !important;
+  border-bottom: 2px solid black !important;
+}
+
+#link{
+  color: #000;
+}
+
+#link:hover{
+  color: #009933;
+}
+
+.center{
+  text-align: center;
+}
+
+.ml2 .letter {
+  display: inline-block;
+  line-height: 1em;
+}
+
+.mybtn{
+  background-color: #009933 !important;
+  color: #fff !important;
+}
+
+.mybtn:hover{
+  background-color: black !important;
+  color: #009933 !important;
+}
+
+#loginlink:hover{
+  cursor: pointer;
+  color: blue;
+}
+
+#registerlink:hover{
+  cursor: pointer;
+  color: blue;
+}
+
+html {
+  scroll-behavior: smooth;
+}

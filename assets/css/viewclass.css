@@ -1,0 +1,94 @@
+* {
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Varela Round", sans-serif;
+}
+
+body{
+  background-color: #e6e6e6 !important;
+}
+
+.navbar{
+  background-color:#fff !important;
+  border-bottom: 2px solid black !important;
+}
+
+#link{
+  color: #000;
+}
+
+#link:hover{
+  color: #009933;
+}
+
+.center{
+  text-align: center;
+}
+
+.bannercontainer{
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+.top-left {
+  position: absolute;
+  top: 32%;
+  left: 20%;
+}
+
+#banner-text{
+    font-size: 2vw;
+}
+
+#banner-heading{
+    font-size: 3vw;
+}
+
+@media only screen and (max-width: 600px) {
+
+#banner-text{
+    font-size: 15px;
+}
+
+#banner-heading{
+    font-size: 15px;
+}
+
+}
+
+.basic {
+  text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
+}
+
+#addstudents:hover{
+  color: #009933;
+}
+
+.table{
+    width: 90% !important;
+}
+
+.parent:hover > tr {
+  opacity: 0.5;
+}
+
+.parent:hover > tr:hover {
+  opacity: 1.0;
+}
+
+.table-left{
+  margin-left: 5%;
+}
+
+@media only screen and (max-width: 600px) {
+  .table-left{
+  margin-left: 0%;
+}
+}
+
+html {
+  scroll-behavior: smooth;
+}
