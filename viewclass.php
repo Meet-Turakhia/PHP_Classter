@@ -43,19 +43,19 @@
             $result = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$repeatno_id' AND class_id = '$class_id'");
             $row = $result->fetch_assoc();
             if ($row) {
-                $error = "Roll no already exists in classroom, try again!";
+                $error = "Roll no already exists in classroom, try again ❌";
             }
         }
-        if ($error != "Roll no already exists in classroom, try again!") {
+        if ($error != "Roll no already exists in classroom, try again ❌") {
             $result2 = $mysqli->query("SELECT * FROM student WHERE roll_no = '$roll_no' AND email = '$email'");
             $row2 = $result2->fetch_assoc();
             if ($row2) {
                 $student_id = $row2["student_id"];
                 $result = $mysqli->query("INSERT INTO student_class(class_id, student_id) VALUES($class_id, $student_id)");
                 if ($result) {
-                    $success = "student added successfully!";
+                    $success = "student added successfully ✔";
                 } else {
-                    $error = $mysqli->error;
+                    $error = "some error occured, try again ❌";
                 }
             } else {
                 $result = $mysqli->query("INSERT INTO student(roll_no, fullname, email, phone, cgpa) VALUES('$roll_no', '$fullname', '$email', '$phone', '$cgpa')");
@@ -65,12 +65,12 @@
                     $student_id = $id_row["student_id"];
                     $result2 = $mysqli->query("INSERT INTO student_class(class_id, student_id) VALUES('$class_id', '$student_id')");
                     if ($result && $result2) {
-                        $success = "student added successfully!";
+                        $success = "student added successfully ✔";
                     } else {
-                        $error = "some error occured, try again!";
+                        $error = "some error occured, try again ❌";
                     }
                 } else {
-                    $error = "email already exists, try again!";
+                    $error = "email already exists, try again ❌";
                 }
             }
         }
@@ -88,15 +88,15 @@
             $result = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$repeatno_id' AND class_id = '$class_id'");
             $row = $result->fetch_assoc();
             if ($row) {
-                $error = "Roll no already exists in classroom, try again!";
+                $error = "Roll no already exists in classroom, try again ❌";
             }
         }
-        if ($error != "Roll no already exists in classroom, try again!") {
+        if ($error != "Roll no already exists in classroom, try again ❌") {
             $result2 = $mysqli->query("INSERT INTO student_class(class_id, student_id) values ('$class_id', '$student_id')");
             if ($result2) {
-                $success = "Student added successfully!";
+                $success = "Student added successfully ✔";
             } else {
-                $error = "some error occurred, try again!";
+                $error = "some error occurred, try again ❌";
             }
         }
     }
@@ -105,7 +105,7 @@
         $delete_id = $_GET["delete_id"];
         $result = $mysqli->query("DELETE FROM student_class WHERE student_id = '$delete_id' AND class_id = '$class_id'");
         if ($result) {
-            $success = "row deleted successfully!";
+            $success = "row deleted successfully ✔";
             $result = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$delete_id'");
             $row = $result->fetch_assoc();
             if (!$row) {
@@ -138,19 +138,19 @@
             $result = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$repeatno_id' AND class_id = '$class_id'");
             $row = $result->fetch_assoc();
             if ($row) {
-                $error = "Roll no already exists in classroom, try again!";
+                $error = "Roll no already exists in classroom, try again ❌";
             }
         }
-        if ($error != "Roll no already exists in classroom, try again!") {
+        if ($error != "Roll no already exists in classroom, try again ❌") {
             $edit_id = $_GET["edit_id"];
             $result = $mysqli->query("UPDATE student SET roll_no = '$roll_no', fullname = '$fullname', email = '$email', phone = '$phone', cgpa = '$cgpa' WHERE student_id = '$edit_id'");
             if ($result) {
-                $success = "student details updated successfully!";
+                $success = "student details updated successfully ✔";
                 $url = (explode("&", $_SERVER['HTTP_REFERER']));
                 unset($_GET["edit_id"]);
                 header("location:" . $url[0]);
             } else {
-                $error = "email already exists in classroom, try again!";
+                $error = "email already exists in classroom, try again ❌";
             }
         }
     }
@@ -208,6 +208,22 @@
             </ul>
         </div>
     </nav>
+
+    <?php if ($success) { ?>
+        <div class="alert alert-success alert-dismissible fade show m-0" role="alert">
+            <?php echo $success ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php } elseif ($error) { ?>
+        <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
+            <?php echo $error ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php } ?>
 
     <div class="container bannercontainer">
         <img class="mt-5 mb-5 center" src="assets/images/greenbanner.jpg" alt="bookclub banner" width="90%" height="auto" style="image-rendering: pixelated; border-radius: 5px;">
@@ -270,7 +286,7 @@
                             $getinfo = $mysqli->query("SELECT * FROM student WHERE student_id = '$edit_id'");
                             $studentinfo = $getinfo->fetch_assoc();
                             if (!$result) {
-                                $error = "some error occurred, try again!";
+                                $error = "some error occurred, try again ❌";
                             }
                         }
                         ?>
@@ -331,14 +347,6 @@
                             <?php } else { ?>
                                 <button type="submit" class="btn btn-success" name="update">Update</button><br>
                             <?php } ?>
-                            <?php
-                            if ($error) {
-                                echo "<small style='color: red;'>" . $error . "</small>";
-                            }
-                            if ($success) {
-                                echo "<small style='color: green;'>" . $success . "</small>";
-                            }
-                            ?>
                         </form>
 
                         <form action="" method="POST" id="preexisting">
@@ -357,6 +365,7 @@
                                         array_push($repeat_email2, $row2["email"]);
                                     }
                                     $unique_email = array_diff($repeat_email, $repeat_email2);
+                                    $unique_email = array_unique($unique_email);  
                                     foreach ($unique_email as $email) {
                                     ?>
                                         <option><?php echo $email; ?></option>
@@ -364,14 +373,6 @@
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-success" name="submit2">Submit</button><br>
-                            <?php
-                            if ($error) {
-                                echo "<small style='color: red;'>" . $error . "</small>";
-                            }
-                            if ($success) {
-                                echo "<small style='color: green;'>" . $success . "</small>";
-                            }
-                            ?>
                         </form>
                         <?php if (!$edit_id) { ?>
                             <br>

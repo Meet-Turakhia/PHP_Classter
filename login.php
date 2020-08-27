@@ -43,7 +43,7 @@
                 $_SESSION['user_id'] = $row["user_id"];
                 header("Location:index.php");
             } else {
-                $error =  "Invalid username/email or password";
+                $error =  "Invalid username/email or password ❌";
             }
         }
 
@@ -59,16 +59,16 @@
             $key_row = $key->fetch_assoc();
             $key = $key_row["secret_code"];
             if ($secret_code != $key) {
-                $error = "entered code for " . $position . " is incorrect";
+                $error = "entered code for " . $position . " is incorrect ❌";
             } else {
                 $usernamecheck = $mysqli->query("SELECT username FROM userdetails WHERE username = '$username'");
                 $user_row = $usernamecheck->fetch_assoc();
                 $emailcheck = $mysqli->query("SELECT email_id FROM userdetails WHERE email_id = '$email'");
                 $email_row = $emailcheck->fetch_assoc();
                 if ($user_row) {
-                    $error = "Username exists, try another one";
+                    $error = "Username exists, try another one ❌";
                 } elseif ($email_row) {
-                    $error = "email already exists, try another one";
+                    $error = "email already exists, try another one ❌";
                 } else {
                     if ($password == $cpassword) {
                         $password = sha1($password);
@@ -80,12 +80,12 @@
                             $branchresult = $mysqli->query("UPDATE branch SET hod_id = '$hod_id' WHERE branch_id = '$class_id'");
                         }
                         if ($result && $branchresult) {
-                            $success = "User registered successfully";
+                            $success = "User registered successfully ✔";
                         } else {
-                            $error = "Some error occured, try again!";
+                            $error = "Some error occured, try again ❌";
                         }
                     } else {
-                        $error = "passwords dont match, try again";
+                        $error = "passwords dont match, try again ❌";
                     }
                 }
             }
@@ -93,7 +93,6 @@
 
 
     ?>
-
         <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
             <a class="navbar-brand" href="#" style="font-size: 25px">
                 <i class="fas fa-user-graduate" style="color: #009933;"></i> Student Portal
@@ -130,6 +129,22 @@
             <?php } ?>
         </nav>
 
+        <?php if ($success) { ?>
+            <div class="alert alert-success alert-dismissible fade show m-0" role="alert">
+                <?php echo $success ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        <?php } elseif($error) { ?>
+            <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
+                <?php echo $error ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        <?php } ?>
+
         <div class="container-fluid">
             <div class="row align-items-center justify-content-center">
                 <div class="col-sm center m-3">
@@ -153,12 +168,6 @@
                             <h5 style="font-size: 15px;" class="mt-2">Dont have an account?
                                 <span><a id="registerlink">Register</a></span></h5>
                             <?php
-                            if ($error) {
-                                echo "<small style='color: red;'>" . $error . "</small>";
-                            }
-                            if ($success) {
-                                echo "<small style='color: green;'>" . $success . "</small>";
-                            }
                             ?>
                         </form>
                     </div>
@@ -218,14 +227,6 @@
                             <button type="submit" name="register" id="register" class="btn mybtn">Register</button>
                             <h5 style="font-size: 15px;" class="mt-2">Have an account?
                                 <span><a id="loginlink">Login</a></span></h5>
-                            <?php
-                            if ($error) {
-                                echo "<small style='color: red;'>" . $error . "</small>";
-                            }
-                            if ($success) {
-                                echo "<small style='color: green;'>" . $success . "</small>";
-                            }
-                            ?>
                         </form>
                     </div>
 

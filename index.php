@@ -28,6 +28,7 @@
         header("Location: login.php");
     }
     $error = NULL;
+    $success = NULL;
     if ($_SESSION["position"] == "teacher") {
         $teacher_id = $_SESSION["user_id"];
     }
@@ -38,11 +39,11 @@
         $result = $mysqli->query("SELECT * FROM class WHERE name = '$name' AND subject = '$subject' AND branch_id = '$branch_id'");
         $row = $result->fetch_assoc();
         if ($row) {
-            $error = "class already exists, try again!";
+            $error = "class already exists, try again ❌";
         } else {
             $result = $mysqli->query("INSERT INTO class(name, subject, branch_id, teacher_id) values ('$name', '$subject', '$branch_id', '$teacher_id')");
             if (!$result) {
-                $error = "some error occured, try again!";
+                $error = "some error occured, try again ❌";
             }
         }
     }
@@ -52,9 +53,9 @@
         $trash_id = $_GET["trash_id"];
         $result = $mysqli->query("DELETE FROM class WHERE class_id = '$trash_id'");
         if ($result) {
-            $success = "class deleted scuccessfully!";
+            $success = "class deleted scuccessfully ✔";
         } else {
-            $error = "some error occured, try again!";
+            $error = "some error occured, try again ❌";
         }
     }
 
@@ -78,16 +79,16 @@
         $result = $mysqli->query("SELECT * FROM class WHERE name = '$name' AND subject = '$subject' AND branch_id = '$branch_id' AND class_id != '$edit_id'");
         $row = $result->fetch_assoc();
         if ($row) {
-            $error = "class already exists, try again!";
+            $error = "class already exists, try again ❌";
         } else {
             $result = $mysqli->query("UPDATE class SET name = '$name', subject = '$subject', branch_id = '$branch_id' WHERE class_id = '$edit_id'");
             if ($result) {
-                $success = "class updated successfully!";
+                $success = "class updated successfully ✔";
                 $url = (explode("?", $_SERVER['HTTP_REFERER']));
                 unset($_GET["edit_id"]);
                 header("location:" . $url[0]);
             } else {
-                $error = "some error occured try again";
+                $error = "some error occured try again ❌";
             }
         }
     }
@@ -153,6 +154,22 @@
             </ul>
         </div>
     </nav>
+
+    <?php if ($success) { ?>
+        <div class="alert alert-success alert-dismissible fade show m-0" role="alert">
+            <?php echo $success ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php } elseif($error) { ?>
+        <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
+            <?php echo $error ?>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    <?php } ?>
 
     <div class="container-fluid">
 
@@ -276,9 +293,6 @@
                                 <button type="Update" class="btn btn-success" name="update">Update</button><br>
                             <?php } ?>
                             <?php
-                            if ($error) {
-                                echo "<small style='color: red;'>" . $error . "</small>";
-                            }
                             ?>
                         </form>
                     </div>
