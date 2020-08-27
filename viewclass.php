@@ -365,7 +365,7 @@
                                         array_push($repeat_email2, $row2["email"]);
                                     }
                                     $unique_email = array_diff($repeat_email, $repeat_email2);
-                                    $unique_email = array_unique($unique_email);  
+                                    $unique_email = array_unique($unique_email);
                                     foreach ($unique_email as $email) {
                                     ?>
                                         <option><?php echo $email; ?></option>
@@ -478,8 +478,8 @@
 
         </div>
 
-        <div class="footer-copyright text-center py-3">Made by
-            <a href="https://github.com/Meet-Turakhia"> Meet Turakhia</a>
+        <div class="footer-copyright text-center py-3"> Made by
+            Meet Turakhia
         </div>
 
     </footer>

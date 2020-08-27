@@ -285,7 +285,7 @@
             </div>
 
             <div class="footer-copyright text-center py-3"> Made by
-                <a href="https://github.com/Meet-Turakhia"> Meet Turakhia</a>
+            Meet Turakhia
             </div>
 
         </footer>

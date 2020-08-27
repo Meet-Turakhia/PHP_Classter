@@ -162,7 +162,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-    <?php } elseif($error) { ?>
+    <?php } elseif ($error) { ?>
         <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
             <?php echo $error ?>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -387,8 +387,8 @@
 
         </div>
 
-        <div class="footer-copyright text-center py-3">Made by
-            <a href="https://github.com/Meet-Turakhia"> Meet Turakhia</a>
+        <div class="footer-copyright text-center py-3"> Made by
+            Meet Turakhia
         </div>
 
     </footer>
