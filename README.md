@@ -1,4 +1,4 @@
-# PHP_Student_Portal
+# PHP Student Portal
 This is a student portal made in php which executes all CRUD commands.
 Made while learning WDL(Web Development Lab) in Third Year of B.E. Computer Engineering.
 
