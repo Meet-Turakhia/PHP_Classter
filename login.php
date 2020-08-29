@@ -30,20 +30,20 @@
         $error = NULL;
         $success = NULL;
         if (isset($_POST["login"])) {
-            $username_mail = $_POST["email/username"];
+            $username = $_POST["username"];
             $password = $_POST["password"];
             $password = sha1($password);
-            $result = $mysqli->query("SELECT username, password FROM userdetails WHERE username = '$username_mail' OR email_id = '$username_mail' AND password = '$password'");
+            $result = $mysqli->query("SELECT username, password FROM userdetails WHERE username = '$username' AND password = '$password'");
             if ($row = $result->fetch_assoc()) {
                 session_start();
-                $result = $mysqli->query("SELECT * FROM userdetails WHERE username = '$username_mail' OR email_id = '$username_mail' AND password = '$password'");
+                $result = $mysqli->query("SELECT * FROM userdetails WHERE username = '$username' AND password = '$password'");
                 $row = $result->fetch_assoc();
                 $_SESSION['username'] = $row["username"];
                 $_SESSION['position'] = $row["position"];
                 $_SESSION['user_id'] = $row["user_id"];
                 header("Location:index.php");
             } else {
-                $error =  "Invalid username/email or password ❌";
+                $error =  "Invalid username or password ❌";
             }
         }
 
@@ -136,7 +136,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-        <?php } elseif($error) { ?>
+        <?php } elseif ($error) { ?>
             <div class="alert alert-danger alert-dismissible fade show m-0" role="alert">
                 <?php echo $error ?>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -157,8 +157,8 @@
                         <h2 class="center pt-3">Login</h2>
                         <form class="p-2" method="POST">
                             <div class="form-group">
-                                <label for="email/username">Email address/Username:</label>
-                                <input type="text" class="form-control" name="email/username" placeholder="Enter Email/Username:" required autocomplete="off">
+                                <label for="username">Username:</label>
+                                <input type="text" class="form-control" name="username" placeholder="Enter Username:" required autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password:</label>
@@ -285,7 +285,7 @@
             </div>
 
             <div class="footer-copyright text-center py-3"> Made by
-            Meet Turakhia
+                Meet Turakhia
             </div>
 
         </footer>
