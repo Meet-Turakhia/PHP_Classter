@@ -134,3 +134,7 @@ html {
   color: #009933 !important;
   cursor: pointer;
 }
+
+.commenteditbutton:hover{
+  cursor: pointer;
+}

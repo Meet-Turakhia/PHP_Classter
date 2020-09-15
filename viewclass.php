@@ -259,6 +259,36 @@
         }
     }
 
+    if (isset($_GET["commenttrash_id"])) {
+        $comment_id = $_GET["commenttrash_id"];
+        $result = $mysqli->query("DELETE FROM comments WHERE comment_id = '$comment_id'");
+        if ($result) {
+            $success = "comment deleted successfully ✔";
+            echo '<script type="text/javascript">',
+                "$(document).ready(function() {
+                $('#studentsection').hide();
+                $('#announcesection').show();
+        });",
+                '</script>';
+        } else {
+            $error = "some error occured, try again ❌";
+        }
+    }
+
+    if (isset($_POST["commentedit_id"])) {
+        $comment_id = $_POST["commentedit_id"];
+        $comment = $_POST["commentupdate"];
+        $result = $mysqli->query("UPDATE comments SET comment = '$comment', edited = '1' WHERE comment_id = '$comment_id'");
+        if ($result) {
+            $success = "comment updated successfully ✔";
+            $url = (explode("&", $_SERVER['HTTP_REFERER']));
+            unset($_GET["announceedit_id"]);
+            header("location:" . $url[0]);
+        } else {
+            $error = "some error occured, try again ❌";
+        }
+    }
+
     if (isset($_GET["logout"])) {
         session_destroy();
         header("location: login.php");
@@ -466,7 +496,7 @@
                                 <div class="form-group">
                                     <label for="password">Password:</label>
                                     <?php if ($edit_id) { ?>
-                                        <input type="password" value="<?php echo $studentinfo["password"]; ?>" class="form-control" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password:" required autocomplete="off">
+                                        <input type="password" value="<?php echo $studentinfo["password"]; ?>" class="form-control" name="password" placeholder="Enter Password:" required autocomplete="off">
                                     <?php } else { ?>
                                         <input type="password" class="form-control" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password:" required autocomplete="off">
                                     <?php } ?>
@@ -640,17 +670,23 @@
                                 <div class="form-group">
                                     <label for="title">Title:</label>
                                     <?php if ($announceedit_id) { ?>
-                                        <input type="text" value="<?php echo $announceinfo["title"]; ?>" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                        <textarea type="text" id="titleurl" onchange="urlify1()" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                        <?php echo $announceinfo["title"]; ?>
+                                        </textarea>
                                     <?php } else { ?>
-                                        <input type="text" id="titleurl" onchange="urlify1()" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                        <textarea type="text" id="titleurl" onchange="urlify1()" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                        </textarea>
                                     <?php } ?>
                                 </div>
                                 <div class="form-group">
                                     <label for="description">Description:</label>
                                     <?php if ($announceedit_id) { ?>
-                                        <input type="text" value="<?php echo $announceinfo["description"]; ?>" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                        <textarea type="text" id="descriptionurl" onchange="urlify2()" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                        <?php echo $announceinfo["description"]; ?>
+                                        </textarea>
                                     <?php } else { ?>
-                                        <input type="text" id="descriptionurl" onchange="urlify2()" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                        <textarea type="text" id="descriptionurl" onchange="urlify2()" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                        </textarea>
                                     <?php } ?>
                                 </div>
                                 <?php if (!$announceedit_id) { ?>
@@ -678,7 +714,7 @@
                         <small class="text-light" style="float:right">
                             <?php echo $announcement["reg_date"] ?>
                             <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
-                                <a onclick="return confirm('Are you sure, you want to delete the class?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&announcetrash_id=<?php echo $announcement["announce_id"]; ?>"><i class="fas fa-trash ml-3 text-light" style="float: right;"></i></a>
+                                <a onclick="return confirm('Are you sure, you want to delete the announcement?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&announcetrash_id=<?php echo $announcement["announce_id"]; ?>"><i class="fas fa-trash ml-3 text-light" style="float: right;"></i></a>
                                 <a href="viewclass.php?class_id=<?php echo $class_id; ?>&announceedit_id=<?php echo $announcement["announce_id"]; ?>"><i class="fas fa-edit text-light ml-3" style="float: right;"></i></a>
                             <?php } ?>
                         </small>
@@ -710,18 +746,31 @@
                         ?>
                         <div style='text-align: left; font-size: 15px; margin: 0.5% 0% 0.5% 0%;'>
                             <a class="commentcount" id="<?php echo $announcement['announce_id']; ?>" onclick="commenttoggle(<?php echo $announcement['announce_id']; ?>)">
-                                <?php echo $count . " comments" ?>
+                                <?php echo $count . " comment(s)" ?>
                             </a>
                         </div>
                         <div id="<?php echo "section" . $announcement["announce_id"]; ?>" style="display: none;">
-                            <?php $comments = $mysqli->query("SELECT comments.comment, comments.reg_date, userdetails.username FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.reg_date, student.fullname as username FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id' ORDER BY reg_date ASC");
+                            <?php $comments = $mysqli->query("SELECT comments.comment, comments.edited, comments.reg_date, comments.comment_id, userdetails.username FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.edited, comments.comment_id, comments.reg_date, student.fullname as username FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id' ORDER BY reg_date ASC");
                             while ($comment = $comments->fetch_assoc()) {  ?>
                                 <div style='text-align: left; font-size: 12px;'>
                                     <?php
                                     echo $comment["username"] . " " . $comment["reg_date"];
                                     ?>
+                                    <?php if ($comment["edited"]) { ?>
+                                        (edited)
+                                    <?php } ?>
+                                    <a class="commenteditbutton" onclick="commentedit(<?php echo $comment['comment_id']; ?>)"><i class="fas fa-edit ml-3 text-success"></i></a>
+                                    <a onclick="return confirm('Are you sure, you want to delete the comment?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&commenttrash_id=<?php echo $comment["comment_id"]; ?>"><i class="fas fa-trash ml-3 text-success"></i></a>
                                 </div>
-                                <div style='text-align: justify'><?php echo $comment["comment"]; ?></div><br>
+                                <form action="" method="POST" style="display: none; text-align: left;" id="<?php echo "edit" . $comment["comment_id"] ?>">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="commentupdate" value="<?php echo $comment["comment"]; ?>" onchange="urlify4()" id="commentediturl" placeholder="Enter Comment:" required autocomplete="off">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-success" type="submit" name="commentedit_id" value="<?php echo $comment['comment_id']; ?>">Update</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div style='text-align: justify;' id="<?php echo "commentvalue" . $comment['comment_id'] ?>"><?php echo $comment["comment"]; ?></div><br>
                             <?php } ?>
                             <small><a href="<?php echo '#' . $announcement['announce_id']; ?>" id="link"> Top <i class="fas fa-arrow-up"></i></a></small>
                         </div>
