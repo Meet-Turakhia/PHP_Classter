@@ -30,20 +30,37 @@
         $error = NULL;
         $success = NULL;
         if (isset($_POST["login"])) {
-            $username = $_POST["username"];
+            $email = $_POST["email"];
             $password = $_POST["password"];
-            $password = sha1($password);
-            $result = $mysqli->query("SELECT username, password FROM userdetails WHERE username = '$username' AND password = '$password'");
-            if ($row = $result->fetch_assoc()) {
-                session_start();
-                $result = $mysqli->query("SELECT * FROM userdetails WHERE username = '$username' AND password = '$password'");
-                $row = $result->fetch_assoc();
-                $_SESSION['username'] = $row["username"];
-                $_SESSION['position'] = $row["position"];
-                $_SESSION['user_id'] = $row["user_id"];
-                header("Location:index.php");
+            $studentcheck = $_POST["studentcheck"];
+            if ($studentcheck == "on") {
+                $password = sha1($password);
+                $result = $mysqli->query("SELECT * FROM student WHERE email = '$email' AND password = '$password'");
+                if ($row = $result->fetch_assoc()) {
+                    session_start();
+                    $result = $mysqli->query("SELECT * FROM student WHERE email = '$email' AND password = '$password'");
+                    $row = $result->fetch_assoc();
+                    $_SESSION['username'] = $row["fullname"];
+                    $_SESSION['position'] = "student";
+                    $_SESSION['user_id'] = $row["student_id"];
+                    header("Location:index.php");
+                } else {
+                    $error =  "Invalid username or password ❌";
+                }
             } else {
-                $error =  "Invalid username or password ❌";
+                $password = sha1($password);
+                $result = $mysqli->query("SELECT * FROM userdetails WHERE email_id = '$email' AND password = '$password'");
+                if ($row = $result->fetch_assoc()) {
+                    session_start();
+                    $result = $mysqli->query("SELECT * FROM userdetails WHERE email_id = '$email' AND password = '$password'");
+                    $row = $result->fetch_assoc();
+                    $_SESSION['username'] = $row["username"];
+                    $_SESSION['position'] = $row["position"];
+                    $_SESSION['user_id'] = $row["user_id"];
+                    header("Location:index.php");
+                } else {
+                    $error =  "Invalid username or password ❌";
+                }
             }
         }
 
@@ -110,7 +127,7 @@
                         </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" id="link" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-users"></i> Class
+                                <i class="fas fa-chalkboard-teacher"></i> Class
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                                 <?php
@@ -157,12 +174,17 @@
                         <h2 class="center pt-3">Login</h2>
                         <form class="p-2" method="POST">
                             <div class="form-group">
-                                <label for="username">Username:</label>
-                                <input type="text" class="form-control" name="username" placeholder="Enter Username:" required autocomplete="off">
+                                <label for="username">Email:</label>
+                                <input type="email" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password:</label>
                                 <input type="password" class="form-control" name="password" placeholder="Enter Password:" required autocomplete="off">
+                            </div>
+                            <div class="form-check">
+                                <input type="hidden" class="form-check-input" name="studentcheck" value="NULL">
+                                <input type="checkbox" class="form-check-input" name="studentcheck">
+                                <label class="form-check-label" for="student">Student</label>
                             </div>
                             <button type="submit" name="login" class="btn mybtn">Login</button>
                             <h5 style="font-size: 15px;" class="mt-2">Dont have an account?

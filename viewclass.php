@@ -31,12 +31,15 @@
     $error = NULL;
     $success = NULL;
     $edit_id = NULL;
+    $announceedit_id = NULL;
+
     if (isset($_POST["submit"])) {
         $roll_no = $_POST["rollno"];
         $fullname = $_POST["fullname"];
         $email = $_POST["email"];
         $phone = $_POST["phoneno"];
         $cgpa = $_POST["cgpa"];
+        $password = $_POST["password"];
         $result = $mysqli->query("SELECT * FROM student WHERE roll_no ='$roll_no'");
         while ($row = $result->fetch_assoc()) {
             $repeatno_id = $row["student_id"];
@@ -58,7 +61,8 @@
                     $error = "some error occured, try again ❌";
                 }
             } else {
-                $result = $mysqli->query("INSERT INTO student(roll_no, fullname, email, phone, cgpa) VALUES('$roll_no', '$fullname', '$email', '$phone', '$cgpa')");
+                $password = sha1($password);
+                $result = $mysqli->query("INSERT INTO student(roll_no, fullname, email, phone, cgpa, password) VALUES('$roll_no', '$fullname', '$email', '$phone', '$cgpa', '$password')");
                 if ($result) {
                     $id_fetch = $mysqli->query("SELECT student_id FROM student WHERE roll_no = '$roll_no' AND email = '$email'");
                     $id_row = $id_fetch->fetch_assoc();
@@ -92,7 +96,7 @@
             }
         }
         if ($error != "Roll no already exists in classroom, try again ❌") {
-            $result2 = $mysqli->query("INSERT INTO student_class(class_id, student_id) values ('$class_id', '$student_id')");
+            $result2 = $mysqli->query("INSERT INTO student_class(class_id, student_id) VALUES ('$class_id', '$student_id')");
             if ($result2) {
                 $success = "Student added successfully ✔";
             } else {
@@ -105,7 +109,7 @@
         $delete_id = $_GET["delete_id"];
         $result = $mysqli->query("DELETE FROM student_class WHERE student_id = '$delete_id' AND class_id = '$class_id'");
         if ($result) {
-            $success = "row deleted successfully ✔";
+            $success = "student deleted successfully ✔";
             $result = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$delete_id'");
             $row = $result->fetch_assoc();
             if (!$row) {
@@ -117,7 +121,6 @@
     if (isset($_GET["edit_id"])) {
         echo '<script type="text/javascript">',
             "function editmodal() {
-        console.log('hi');
         setTimeout(function () {
             $('#myModal').modal({backdrop: 'static', keyboard: false, show:true});
         }, 1000);
@@ -155,6 +158,107 @@
         }
     }
 
+    if (isset($_POST["announcesubmit"])) {
+        $title = $_POST["title"];
+        $description = $_POST["description"];
+        $author_id = $_SESSION["user_id"];
+        $result = $mysqli->query("INSERT INTO announcements(title, description, class_id, author_id) VALUES ('$title', '$description', '$class_id', '$author_id')");
+        if ($result) {
+            $success = "announcement made successfully ✔";
+            echo '<script type="text/javascript">',
+                "$(document).ready(function() {
+                $('#studentsection').hide();
+                $('#announcesection').show();
+        });",
+                '</script>';
+        } else {
+            $error = "some error occured, try again ❌";
+        }
+    }
+
+    if (isset($_GET["announcetrash_id"])) {
+        $announce_id = $_GET["announcetrash_id"];
+        $result = $mysqli->query("DELETE FROM announcements WHERE announce_id = '$announce_id'");
+        if ($result) {
+            $success = "announcement deleted successfully ✔";
+            echo '<script type="text/javascript">',
+                "$(document).ready(function() {
+                $('#studentsection').hide();
+                $('#announcesection').show();
+        });",
+                '</script>';
+        } else {
+            $error = "some error occured, try again ❌";
+        }
+    }
+
+    if (isset($_GET["announceedit_id"])) {
+        echo '<script type="text/javascript">',
+            "$(document).ready(function() {
+                $('#studentsection').hide();
+                $('#announcesection').show();
+        });",
+            '</script>';
+        echo '<script type="text/javascript">',
+            "function editannounce() {
+        setTimeout(function () {
+            $('#announceModal').modal({backdrop: 'static', keyboard: false, show:true});
+        }, 1000);
+        }",
+            'editannounce();',
+            '</script>';
+    }
+
+    if (isset($_POST["announceupdate"])) {
+        $announce_id = $_GET["announceedit_id"];
+        $title = $_POST["title"];
+        $description = $_POST["description"];
+        $author_id = $_SESSION["user_id"];
+        $result = $mysqli->query("UPDATE announcements SET title = '$title', description = '$description', author_id = '$author_id', edited = 1 WHERE announce_id = '$announce_id'");
+        if ($result) {
+            $success = "announcement updated successfully ✔";
+            $url = (explode("&", $_SERVER['HTTP_REFERER']));
+            unset($_GET["announceedit_id"]);
+            header("location:" . $url[0]);
+        } else {
+            $error = "some error occured, try again ❌";
+        }
+    }
+
+    if (isset($_POST["commentbutton"])) {
+        $announce_id = $_POST["commentbutton"];
+        $comment = $_POST["comment"];
+        if ($_SESSION["position"] == "student") {
+            $student_id = $_SESSION["user_id"];
+            $result = $mysqli->query("INSERT INTO comments(comment, announce_id, student_id) VALUES ('$comment', '$announce_id', '$student_id')");
+            if ($result) {
+                $success = "comment added successfully ✔";
+                echo '<script type="text/javascript">',
+                    "$(document).ready(function() {
+                     $('#studentsection').hide();
+                     $('#announcesection').show();
+        });",
+                    '</script>';
+            } else {
+                $error = "some error occured, try again ❌";
+            }
+        } else {
+            $faculty_id = $_SESSION["user_id"];
+            $result = $mysqli->query("INSERT INTO comments(comment, announce_id, faculty_id) VALUES ('$comment', '$announce_id', '$faculty_id')");
+            if ($result) {
+                $success = "comment added successfully ✔";
+                echo '<script type="text/javascript">',
+                    "$(document).ready(function() {
+                     $('#studentsection').hide();
+                     $('#announcesection').show();
+        });",
+                    '</script>';
+            } else {
+                $error = "some error occured, try again ❌";
+            }
+        }
+    }
+
     if (isset($_GET["logout"])) {
         session_destroy();
         header("location: login.php");
@@ -177,21 +281,37 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="link" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-users"></i> Class
+                        <i class="fas fa-chalkboard-teacher"></i> Class
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <?php
-                        $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id");
+                        if ($_SESSION["position"] == "viewer" || $_SESSION["position"] == "admin") {
+                            $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id ORDER BY branch.branch_name");
+                        } elseif ($_SESSION["position"] == "teacher") {
+                            $teacher_id = $_SESSION["user_id"];
+                            $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE class.teacher_id = '$teacher_id' ORDER BY branch.branch_name");
+                        } elseif ($_SESSION["position"] == "hod") {
+                            $hod_id = $_SESSION["user_id"];
+                            $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE branch.hod_id = '$hod_id' ORDER BY branch.branch_name");
+                        } elseif ($_SESSION["position"] == "student") {
+                            $student_id = $_SESSION["user_id"];
+                            $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id INNER JOIN student_class ON class.class_id = student_class.class_id WHERE student_id = '$student_id'");
+                        }
                         while ($class = $classes->fetch_assoc()) {
                         ?>
                             <a class="dropdown-item" id="link" href="viewclass.php?class_id=<?php echo $class["class_id"]; ?>">
                                 <?php echo $class["name"]; ?>
                                 <span> <?php echo $class["subject"]; ?></span>
-                                <span> <?php echo $class["branch_name"]; ?></span></a>
+                                <span> <?php echo $class["branch_name"]; ?></span>
+                            </a>
                         <?php } ?>
                     </div>
                 </li>
             </ul>
+            <div class="mx-auto order-0">
+                <a class="navbar-brand mx-auto pr-5" id="studentlink"><i class="fas fa-users"></i> Students</a>
+                <a class="navbar-brand mx-auto" id="announcelink"><i class="fas fa-bullhorn"></i> Announcements</a>
+            </div>
             <ul class="nav navbar-nav ml-auto">
                 <li>
                     <h5 class="mt-2 mr-2" style="color: #009933;">Welcome,
@@ -225,207 +345,392 @@
         </div>
     <?php } ?>
 
-    <div class="container bannercontainer">
-        <img class="mt-5 mb-5 center" src="assets/images/greenbanner.jpg" alt="bookclub banner" width="90%" height="auto" style="image-rendering: pixelated; border-radius: 5px;">
-        <div class="top-left">
-            <div class="row">
-                <h1 id="banner-heading">
-                    <?php
-                    $result = $mysqli->query("SELECT * FROM class INNER JOIN userdetails ON class.teacher_id = userdetails.user_id WHERE class_id='$class_id'");
-                    $result2 = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE class_id='$class_id'");
-                    $row = $result->fetch_assoc();
-                    $row2 = $result2->fetch_assoc();
-                    echo $row["subject"];
-                    ?></h1>
-            </div>
-            <div class="row">
-                <h2 id="banner-text">
-                    <?php echo $row["name"]; ?>
-                    <span><?php echo $row2["branch_name"]; ?></span>
-                </h2>
-            </div>
-            <div class="row">
-                <h2 id="banner-text">
-                    <?php echo "Teacher: " . $row["username"] ?>
-                </h2>
-            </div>
-        </div>
-    </div>
-
-    <div class="container center">
-
-        <ul class="list-inline mt-3 mb-5">
-            <li class="list-inline-item">
-                <?php if ($_SESSION["position"] != "viewer") { ?>
-                    <h3 class="basic">
-                        Add<span style="color: #009933;"> Students</span>
-                    </h3>
-                <?php } else { ?>
-                    <h3 class="basic">
-                        List of<span style="color: #009933;"> Students</span>
-                    </h3>
-                <?php } ?>
-            </li>
-            <?php if ($_SESSION["position"] != "viewer") { ?>
-                <li class="list-inline-item">
-                    <a href="" style="color: black;" data-toggle="modal" data-target="#myModal">
-                        <i class="fa fa-plus-circle basic" title="Add Student" id="addstudents" style="font-size: 30px;" aria-hidden="true"></i>
-                    </a>
-                </li>
-            <?php } ?>
-        </ul>
-
-        <div class="modal fade" id="myModal">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-
-                    <div class="modal-header center">
+    <div id="studentsection">
+        <div class="container bannercontainer">
+            <img class="mt-5 mb-5 center" src="assets/images/greenbanner.jpg" alt="bookclub banner" width="90%" height="auto" style="image-rendering: pixelated; border-radius: 5px;">
+            <div class="top-left">
+                <div class="row">
+                    <h1 id="banner-heading">
                         <?php
-                        if (isset($_GET["edit_id"])) {
-                            $edit_id = $_GET["edit_id"];
-                            $getinfo = $mysqli->query("SELECT * FROM student WHERE student_id = '$edit_id'");
-                            $studentinfo = $getinfo->fetch_assoc();
-                            if (!$result) {
-                                $error = "some error occurred, try again ❌";
-                            }
-                        }
-                        ?>
-                        <?php if ($edit_id) { ?>
-                            <h4 class="modal-title" style="color: #009933;">Edit Student</h4>
-                        <?php } else { ?>
-                            <h4 class="modal-title" style="color: #009933;">Add Student</h4>
-                        <?php } ?>
-                        <?php if (!$edit_id) { ?>
-                            <a href="viewclass.php?class_id=<?php echo $class_id; ?>" name="close" class="close" data-dismiss="modal">&times;</a>
-                        <?php } ?>
-                    </div>
-
-                    <div class="modal-body">
-                        <form action="" method="POST" id="nonexisting">
-                            <div class="form-group">
-                                <label for="rollno">Roll No:</label>
-                                <?php if ($edit_id) { ?>
-                                    <input type="text" value="<?php echo $studentinfo["roll_no"]; ?>" class="form-control" name="rollno" placeholder="Enter Roll No:" required autocomplete="off">
-                                <?php } else { ?>
-                                    <input type="text" class="form-control" name="rollno" placeholder="Enter Roll No:" required autocomplete="off">
-                                <?php } ?>
-                            </div>
-                            <div class="form-group">
-                                <label for="fullname">Fullname:</label>
-                                <?php if ($edit_id) { ?>
-                                    <input type="text" value="<?php echo $studentinfo["fullname"]; ?>" class="form-control" name="fullname" placeholder="Enter Full Name:" required autocomplete="off">
-                                <?php } else { ?>
-                                    <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name:" required autocomplete="off">
-                                <?php } ?>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email:</label>
-                                <?php if ($edit_id) { ?>
-                                    <input type="email" value="<?php echo $studentinfo["email"]; ?>" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
-                                <?php } else { ?>
-                                    <input type="email" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
-                                <?php } ?>
-                            </div>
-                            <div class="form-group">
-                                <label for="phoneno">Phone No:</label>
-                                <?php if ($edit_id) { ?>
-                                    <input type="tel" value="<?php echo $studentinfo["phone"]; ?>" class="form-control" name="phoneno" placeholder="Enter Phone No:" pattern="^((\+){1}91){1}[1-9]{1}[0-9]{9}$" title="Use Indian Pattern, eg:- +919999999999" required autocomplete="off">
-                                <?php } else { ?>
-                                    <input type="tel" class="form-control" name="phoneno" placeholder="Enter Phone No:" pattern="^((\+){1}91){1}[1-9]{1}[0-9]{9}$" title="Use Indian Pattern, eg:- +919999999999" required autocomplete="off">
-                                <?php } ?>
-                            </div>
-                            <div class="form-group">
-                                <label for="cgpa">cgpa:</label>
-                                <?php if ($edit_id) { ?>
-                                    <input type="text" value="<?php echo $studentinfo["cgpa"]; ?>" class="form-control" name="cgpa" placeholder="Enter CGPA:" required autocomplete="off">
-                                <?php } else { ?>
-                                    <input type="text" class="form-control" name="cgpa" placeholder="Enter CGPA:" required autocomplete="off">
-                                <?php } ?>
-                            </div>
-                            <?php if (!$edit_id) { ?>
-                                <button type="submit" class="btn btn-success" name="submit">Submit</button><br>
-                            <?php } else { ?>
-                                <button type="submit" class="btn btn-success" name="update">Update</button><br>
-                            <?php } ?>
-                        </form>
-
-                        <form action="" method="POST" id="preexisting">
-                            <div class="form-group">
-                                <label for="email">Select Email:</label>
-                                <select class="form-control" onfocus='this.size=3;' onblur='this.size=1;' onchange='this.size=1; this.blur();' name="email">
-                                    <?php
-                                    $repeat_email = array();
-                                    $repeat_email2 = array();
-                                    $result = $mysqli->query("SELECT email FROM student INNER JOIN student_class ON student.student_id = student_class.student_id WHERE student_class.class_id != '$class_id'");
-                                    $result2 = $mysqli->query("SELECT email FROM student INNER JOIN student_class ON student.student_id = student_class.student_id WHERE student_class.class_id = '$class_id'");
-                                    while ($row = $result->fetch_assoc()) {
-                                        array_push($repeat_email, $row["email"]);
-                                    }
-                                    while ($row2 = $result2->fetch_assoc()) {
-                                        array_push($repeat_email2, $row2["email"]);
-                                    }
-                                    $unique_email = array_diff($repeat_email, $repeat_email2);
-                                    $unique_email = array_unique($unique_email);
-                                    foreach ($unique_email as $email) {
-                                    ?>
-                                        <option><?php echo $email; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success" name="submit2">Submit</button><br>
-                        </form>
-                        <?php if (!$edit_id) { ?>
-                            <br>
-                            <button class="btn btn-success" type="button" id="prebtn">Preexisting</button><span> <button class="btn btn-success" type="button" id="nonbtn">Nonexisting</button></span><br>
-                        <?php } ?>
-                    </div>
-
+                        $result = $mysqli->query("SELECT * FROM class INNER JOIN userdetails ON class.teacher_id = userdetails.user_id WHERE class_id='$class_id'");
+                        $result2 = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE class_id='$class_id'");
+                        $row = $result->fetch_assoc();
+                        $row2 = $result2->fetch_assoc();
+                        echo $row["subject"];
+                        ?></h1>
+                </div>
+                <div class="row">
+                    <h2 id="banner-text">
+                        <?php echo $row["name"]; ?>
+                        <span><?php echo $row2["branch_name"]; ?></span>
+                    </h2>
+                </div>
+                <div class="row">
+                    <h2 id="banner-text">
+                        <?php echo "Teacher: " . $row["username"] ?>
+                    </h2>
                 </div>
             </div>
         </div>
 
-        <div class="table-responsive table-left mb-5">
-            <table class="table">
-                <thead class="bg-success">
-                    <tr>
-                        <th scope="col">Roll no</th>
-                        <th scope="col">Fullname</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Phone No</th>
-                        <th scope="col">CGPA</th>
-                        <?php if ($_SESSION["position"] != "viewer") { ?>
-                            <th scope="col">Action</th>
-                        <?php } ?>
-                    </tr>
-                </thead>
-                <tbody class="table-success parent">
-                    <?php
-                    $students = $mysqli->query("SELECT * FROM student ORDER BY roll_no");
-                    while ($studentrow = $students->fetch_assoc()) {
-                        $student_id = $studentrow["student_id"];
-                        $relation = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$student_id' AND class_id = '$class_id'");
-                        $relationrow = $relation->fetch_assoc();
-                        if ($relationrow) {
-                    ?>
-                            <tr>
-                                <td><?php echo $studentrow["roll_no"]; ?></td>
-                                <td><?php echo $studentrow["fullname"]; ?></td>
-                                <td><?php echo $studentrow["email"]; ?></td>
-                                <td><?php echo $studentrow["phone"]; ?></td>
-                                <td><?php echo $studentrow["cgpa"]; ?></td>
-                                <?php if ($_SESSION["position"] != "viewer") { ?>
-                                    <td><a name="edit" id="edit" href="viewclass.php?class_id=<?php echo $class_id; ?>&edit_id=<?php echo $studentrow["student_id"]; ?>" class="text-success mb-1 mr-3"><i class="fas fa-edit"></i></a>
-                                        <span><a name="delete" onclick="return confirm('Are you sure, you want to delete the record?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&delete_id=<?php echo $studentrow["student_id"]; ?>" class="text-success mb-1"><i class="fas fa-trash"></i></a></span>
-                                    </td>
+        <div class="container center">
+
+            <ul class="list-inline mt-3 mb-5">
+                <li class="list-inline-item">
+                    <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                        <h3 class="basic">
+                            Add<span style="color: #009933;"> Students</span>
+                        </h3>
+                    <?php } else { ?>
+                        <h3 class="basic">
+                            List of<span style="color: #009933;"> Students</span>
+                        </h3>
+                    <?php } ?>
+                </li>
+                <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                    <li class="list-inline-item">
+                        <a href="" style="color: black;" data-toggle="modal" data-target="#myModal">
+                            <i class="fa fa-plus-circle basic" title="Add Student" id="addbutton" style="font-size: 30px;" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                <?php } ?>
+            </ul>
+
+            <div class="modal fade" id="myModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header center">
+                            <?php
+                            if (isset($_GET["edit_id"])) {
+                                $edit_id = $_GET["edit_id"];
+                                $getinfo = $mysqli->query("SELECT * FROM student WHERE student_id = '$edit_id'");
+                                $studentinfo = $getinfo->fetch_assoc();
+                                if (!$result) {
+                                    $error = "some error occurred, try again ❌";
+                                }
+                            }
+                            ?>
+                            <?php if ($edit_id) { ?>
+                                <h4 class="modal-title" style="color: #009933;">Edit Student</h4>
+                            <?php } else { ?>
+                                <h4 class="modal-title" style="color: #009933;">Add Student</h4>
+                            <?php } ?>
+                            <?php if (!$edit_id) { ?>
+                                <a href="viewclass.php?class_id=<?php echo $class_id; ?>" name="close" class="close" data-dismiss="modal">&times;</a>
+                            <?php } ?>
+                        </div>
+
+                        <div class="modal-body">
+                            <form action="" method="POST" id="nonexisting">
+                                <div class="form-group">
+                                    <label for="rollno">Roll No:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="text" value="<?php echo $studentinfo["roll_no"]; ?>" class="form-control" name="rollno" placeholder="Enter Roll No:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="text" class="form-control" name="rollno" placeholder="Enter Roll No:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="fullname">Fullname:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="text" value="<?php echo $studentinfo["fullname"]; ?>" class="form-control" name="fullname" placeholder="Enter Full Name:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="text" class="form-control" name="fullname" placeholder="Enter Full Name:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="email" value="<?php echo $studentinfo["email"]; ?>" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="email" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phoneno">Phone No:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="tel" value="<?php echo $studentinfo["phone"]; ?>" class="form-control" name="phoneno" placeholder="Enter Phone No:" pattern="^((\+){1}91){1}[1-9]{1}[0-9]{9}$" title="Use Indian Pattern, eg:- +919999999999" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="tel" class="form-control" name="phoneno" placeholder="Enter Phone No:" pattern="^((\+){1}91){1}[1-9]{1}[0-9]{9}$" title="Use Indian Pattern, eg:- +919999999999" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cgpa">cgpa:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="text" value="<?php echo $studentinfo["cgpa"]; ?>" class="form-control" name="cgpa" placeholder="Enter CGPA:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="text" class="form-control" name="cgpa" placeholder="Enter CGPA:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password:</label>
+                                    <?php if ($edit_id) { ?>
+                                        <input type="password" value="<?php echo $studentinfo["password"]; ?>" class="form-control" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="password" class="form-control" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters" placeholder="Enter Password:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <?php if (!$edit_id) { ?>
+                                    <button type="submit" class="btn btn-success" name="submit">Submit</button><br>
+                                <?php } else { ?>
+                                    <button type="submit" class="btn btn-success" name="update">Update</button><br>
                                 <?php } ?>
-                            </tr>
-                    <?php }
-                    } ?>
-                </tbody>
-            </table>
+                            </form>
+
+                            <form action="" method="POST" id="preexisting">
+                                <div class="form-group">
+                                    <label for="email">Select Email:</label>
+                                    <select class="form-control" onfocus='this.size=3;' onblur='this.size=1;' onchange='this.size=1; this.blur();' name="email">
+                                        <?php
+                                        $repeat_email = array();
+                                        $repeat_email2 = array();
+                                        $result = $mysqli->query("SELECT email FROM student INNER JOIN student_class ON student.student_id = student_class.student_id WHERE student_class.class_id != '$class_id'");
+                                        $result2 = $mysqli->query("SELECT email FROM student INNER JOIN student_class ON student.student_id = student_class.student_id WHERE student_class.class_id = '$class_id'");
+                                        while ($row = $result->fetch_assoc()) {
+                                            array_push($repeat_email, $row["email"]);
+                                        }
+                                        while ($row2 = $result2->fetch_assoc()) {
+                                            array_push($repeat_email2, $row2["email"]);
+                                        }
+                                        $unique_email = array_diff($repeat_email, $repeat_email2);
+                                        $unique_email = array_unique($unique_email);
+                                        foreach ($unique_email as $email) {
+                                        ?>
+                                            <option><?php echo $email; ?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-success" name="submit2">Submit</button><br>
+                            </form>
+                            <?php if (!$edit_id) { ?>
+                                <br>
+                                <button class="btn btn-success" type="button" id="prebtn">Preexisting</button><span> <button class="btn btn-success" type="button" id="nonbtn">Nonexisting</button></span><br>
+                            <?php } ?>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive table-left mb-5">
+                <table class="table">
+                    <thead class="bg-success">
+                        <tr>
+                            <th scope="col">Roll no</th>
+                            <th scope="col">Fullname</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Phone No</th>
+                            <th scope="col">CGPA</th>
+                            <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                                <th scope="col">Action</th>
+                            <?php } ?>
+                        </tr>
+                    </thead>
+                    <tbody class="table-success parent">
+                        <?php
+                        $students = $mysqli->query("SELECT * FROM student ORDER BY roll_no");
+                        while ($studentrow = $students->fetch_assoc()) {
+                            $student_id = $studentrow["student_id"];
+                            $relation = $mysqli->query("SELECT * FROM student_class WHERE student_id = '$student_id' AND class_id = '$class_id'");
+                            $relationrow = $relation->fetch_assoc();
+                            if ($relationrow) {
+                        ?>
+                                <tr>
+                                    <td><?php echo $studentrow["roll_no"]; ?></td>
+                                    <td><?php echo $studentrow["fullname"]; ?></td>
+                                    <td><?php echo $studentrow["email"]; ?></td>
+                                    <td><?php echo $studentrow["phone"]; ?></td>
+                                    <td><?php echo $studentrow["cgpa"]; ?></td>
+                                    <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                                        <td><a name="edit" id="edit" href="viewclass.php?class_id=<?php echo $class_id; ?>&edit_id=<?php echo $studentrow["student_id"]; ?>" class="text-success mb-1 mr-3"><i class="fas fa-edit"></i></a>
+                                            <span><a name="delete" onclick="return confirm('Are you sure, you want to delete the record?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&delete_id=<?php echo $studentrow["student_id"]; ?>" class="text-success mb-1"><i class="fas fa-trash"></i></a></span>
+                                        </td>
+                                    <?php } ?>
+                                </tr>
+                        <?php }
+                        } ?>
+                    </tbody>
+                </table>
+
+            </div>
 
         </div>
+    </div>
 
+    <div id="announcesection" style="display: none;">
+
+        <div class="container bannercontainer">
+            <img class="mt-5 mb-5 center" src="assets/images/greenbanner.jpg" alt="bookclub banner" width="90%" height="auto" style="image-rendering: pixelated; border-radius: 5px;">
+            <div class="top-left">
+                <div class="row">
+                    <h1 id="banner-heading">
+                        <?php
+                        $result = $mysqli->query("SELECT * FROM class INNER JOIN userdetails ON class.teacher_id = userdetails.user_id WHERE class_id='$class_id'");
+                        $result2 = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE class_id='$class_id'");
+                        $row = $result->fetch_assoc();
+                        $row2 = $result2->fetch_assoc();
+                        echo $row["subject"];
+                        ?></h1>
+                </div>
+                <div class="row">
+                    <h2 id="banner-text">
+                        <?php echo $row["name"]; ?>
+                        <span><?php echo $row2["branch_name"]; ?></span>
+                    </h2>
+                </div>
+                <div class="row">
+                    <h2 id="banner-text">
+                        <?php echo "Teacher: " . $row["username"] ?>
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="container center">
+
+            <ul class="list-inline mb-5 mt-3">
+                <li class="list-inline-item">
+                    <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                        <h3 class="basic">
+                            Make<span style="color: #009933;"> Announcements</span>
+                        </h3>
+                    <?php } else { ?>
+                        <h3 class="basic">
+                            All the<span style="color: #009933;"> Announcements</span>
+                        </h3>
+                    <?php } ?>
+                </li>
+                <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                    <li class="list-inline-item">
+                        <a href="" style="color: black;" data-toggle="modal" data-target="#announceModal">
+                            <i class="fa fa-plus-circle basic" title="Add Announcements" id="addbutton" style="font-size: 30px;" aria-hidden="true"></i>
+                        </a>
+                    </li>
+                <?php } ?>
+            </ul>
+
+            <div class="modal fade" id="announceModal">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+
+                        <div class="modal-header center">
+                            <?php
+                            if (isset($_GET["announceedit_id"])) {
+                                $announceedit_id = $_GET["announceedit_id"];
+                                $getannounceinfo = $mysqli->query("SELECT * FROM announcements WHERE announce_id = '$announceedit_id'");
+                                $announceinfo = $getannounceinfo->fetch_assoc();
+                                if (!$announceinfo) {
+                                    $error = "some error occurred, try again ❌";
+                                }
+                            }
+                            ?>
+                            <?php if ($announceedit_id) { ?>
+                                <h4 class="modal-title" style="color: #009933;">Edit Announcement</h4>
+                            <?php } else { ?>
+                                <h4 class="modal-title" style="color: #009933;">Announce</h4>
+                            <?php } ?>
+                            <?php if (!$announceedit_id) { ?>
+                                <a href="viewclass.php?class_id=<?php echo $class_id; ?>" name="close" class="close" data-dismiss="modal">&times;</a>
+                            <?php } ?>
+                        </div>
+
+                        <div class="modal-body">
+                            <form action="" method="POST">
+                                <div class="form-group">
+                                    <label for="title">Title:</label>
+                                    <?php if ($announceedit_id) { ?>
+                                        <input type="text" value="<?php echo $announceinfo["title"]; ?>" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="text" id="titleurl" onchange="urlify1()" class="form-control" name="title" placeholder="Enter Title:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <div class="form-group">
+                                    <label for="description">Description:</label>
+                                    <?php if ($announceedit_id) { ?>
+                                        <input type="text" value="<?php echo $announceinfo["description"]; ?>" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                    <?php } else { ?>
+                                        <input type="text" id="descriptionurl" onchange="urlify2()" class="form-control" name="description" placeholder="Enter Description:" required autocomplete="off">
+                                    <?php } ?>
+                                </div>
+                                <?php if (!$announceedit_id) { ?>
+                                    <button type="submit" class="btn btn-success" name="announcesubmit">Submit</button><br>
+                                <?php } else { ?>
+                                    <button type="submit" class="btn btn-success" name="announceupdate">Update</button><br>
+                                <?php } ?>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <?php
+            $announcements = $mysqli->query("SELECT *, announcements.reg_date FROM announcements INNER JOIN userdetails ON announcements.author_id = userdetails.user_id WHERE class_id = '$class_id' ORDER BY announcements.reg_date DESC");
+            while ($announcement = $announcements->fetch_assoc()) {
+            ?>
+                <div class="card border-success mb-5">
+                    <div class="card-header d-inline text-light bg-success" style="text-align: left">
+                        Posted By: <?php echo $announcement["username"]; ?>
+                        <?php if ($announcement["edited"]) { ?>
+                            (edited)
+                        <?php } ?>
+                        <small class="text-light" style="float:right">
+                            <?php echo $announcement["reg_date"] ?>
+                            <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
+                                <a onclick="return confirm('Are you sure, you want to delete the class?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&announcetrash_id=<?php echo $announcement["announce_id"]; ?>"><i class="fas fa-trash ml-3 text-light" style="float: right;"></i></a>
+                                <a href="viewclass.php?class_id=<?php echo $class_id; ?>&announceedit_id=<?php echo $announcement["announce_id"]; ?>"><i class="fas fa-edit text-light ml-3" style="float: right;"></i></a>
+                            <?php } ?>
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title"><?php echo $announcement["title"] ?></h5>
+                        <p class="card-text" style="text-align: justify;"><?php echo $announcement["description"] ?></p>
+                    </div>
+                    <?php if (!($_SESSION["position"] == "viewer")) { ?>
+                        <div class="card-footer border-success">
+                            <form action="" method="POST">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="comment" onchange="urlify3()" id="commenturl" placeholder="Enter Comment:" required autocomplete="off">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-success" type="submit" value="<?php echo $announcement["announce_id"]; ?>" name="commentbutton">Submit</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    <?php } ?>
+                    <div class="card-footer border-success bg-transparent">
+                        <?php
+                        $announce_id = $announcement["announce_id"];
+                        $count = 0;
+                        $countcomments = $mysqli->query("SELECT comments.comment, comments.reg_date, userdetails.username FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.reg_date, student.fullname as username FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id'");
+                        while ($countcomment = $countcomments->fetch_assoc()) {
+                            $count = $count + 1;
+                        }
+                        ?>
+                        <div style='text-align: left; font-size: 15px; margin: 0.5% 0% 0.5% 0%;'>
+                            <a class="commentcount" id="<?php echo $announcement['announce_id']; ?>" onclick="commenttoggle(<?php echo $announcement['announce_id']; ?>)">
+                                <?php echo $count . " comments" ?>
+                            </a>
+                        </div>
+                        <div id="<?php echo "section" . $announcement["announce_id"]; ?>" style="display: none;">
+                            <?php $comments = $mysqli->query("SELECT comments.comment, comments.reg_date, userdetails.username FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.reg_date, student.fullname as username FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id' ORDER BY reg_date ASC");
+                            while ($comment = $comments->fetch_assoc()) {  ?>
+                                <div style='text-align: left; font-size: 12px;'>
+                                    <?php
+                                    echo $comment["username"] . " " . $comment["reg_date"];
+                                    ?>
+                                </div>
+                                <div style='text-align: justify'><?php echo $comment["comment"]; ?></div><br>
+                            <?php } ?>
+                            <small><a href="<?php echo '#' . $announcement['announce_id']; ?>" id="link"> Top <i class="fas fa-arrow-up"></i></a></small>
+                        </div>
+                    </div>
+
+                </div>
+            <?php } ?>
+
+        </div>
     </div>
 
     <footer class="page-footer font-small bg-light footer-border" style="border-top: 2px solid black !important;">

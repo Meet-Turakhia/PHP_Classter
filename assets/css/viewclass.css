@@ -23,6 +23,22 @@ body{
   color: #009933;
 }
 
+#studentlink{
+  color: #000;
+}
+
+#studentlink:hover{
+  color: #009933;
+}
+
+#announcelink{
+  color: #000;
+}
+
+#announcelink:hover{
+  color: #009933;
+}
+
 .center{
   text-align: center;
 }
@@ -63,7 +79,7 @@ body{
   text-shadow: 2px 4px 3px rgba(0,0,0,0.3);
 }
 
-#addstudents:hover{
+#addbutton:hover{
   color: #009933;
 }
 
@@ -91,4 +107,30 @@ body{
 
 html {
   scroll-behavior: smooth;
+}
+
+.navbar-nav.navbar-center {
+  position: absolute;
+  left: 50%;
+  transform: translatex(-50%);
+}
+
+.card{
+  margin-left: 5% !important;
+  width: 90% !important;
+}
+
+#studentlink:hover{
+  color: #009933 !important;
+  cursor: pointer;
+}
+
+#announcelink:hover{
+  color: #009933 !important;
+  cursor: pointer;
+}
+
+.commentcount:hover{
+  color: #009933 !important;
+  cursor: pointer;
 }

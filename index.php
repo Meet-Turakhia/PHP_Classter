@@ -115,7 +115,7 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" id="link" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-users"></i> Class
+                        <i class="fas fa-chalkboard-teacher"></i> Class
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <?php
@@ -123,9 +123,12 @@
                             $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id ORDER BY branch.branch_name");
                         } elseif ($_SESSION["position"] == "teacher") {
                             $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE class.teacher_id = '$teacher_id' ORDER BY branch.branch_name");
-                        } else {
+                        } elseif ($_SESSION["position"] == "hod") {
                             $hod_id = $_SESSION["user_id"];
                             $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE branch.hod_id = '$hod_id' ORDER BY branch.branch_name");
+                        } elseif ($_SESSION["position"] == "student") {
+                            $student_id = $_SESSION["user_id"];
+                            $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id INNER JOIN student_class ON class.class_id = student_class.class_id WHERE student_id = '$student_id'");
                         }
                         while ($class = $classes->fetch_assoc()) {
                         ?>
@@ -190,7 +193,11 @@
                     $row = $result->fetch_assoc();
                 ?>
                     <h3 class="basic">
-                        List of<?php echo $row["branch_name"]; ?><span style="color: #009933;"> Classes</span>
+                        List of <?php echo $row["branch_name"]; ?><span style="color: #009933;"> Classes</span>
+                    </h3>
+                <?php } elseif ($_SESSION["position"] == "student") { ?>
+                    <h3 class="basic">
+                        Your Enrolled<span style="color: #009933;"> Classes</span>
                     </h3>
                 <?php } else { ?>
                     <h3 class="basic">
@@ -198,7 +205,7 @@
                     </h3>
                 <?php } ?>
             </li>
-            <?php if (!($_SESSION["position"] == "admin" || $_SESSION["position"] == "viewer")) { ?>
+            <?php if (!($_SESSION["position"] == "admin" || $_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
                 <li class="list-inline-item">
                     <a href="" style="color: black;" data-toggle="modal" data-target="#myModal">
                         <i class="fa fa-plus-circle basic" title="Create a class" id="addclass" style="font-size: 30px;" aria-hidden="true"></i>
@@ -307,6 +314,9 @@
                 $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE teacher_id = '$teacher_id'");
             } elseif ($_SESSION["position"] == "hod") {
                 $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id WHERE branch.hod_id = '$hod_id'");
+            } elseif ($_SESSION["position"] == "student") {
+                $student_id = $_SESSION["user_id"];
+                $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id INNER JOIN student_class ON class.class_id = student_class.class_id WHERE student_id = '$student_id'");
             } else {
                 $classes = $mysqli->query("SELECT * FROM class INNER JOIN branch ON class.branch_id = branch.branch_id ORDER BY branch.branch_name");
             }
@@ -314,7 +324,7 @@
             ?>
                 <div class="card border-success mb-5" id="cardshadow">
                     <div class="card-header bg-success"><span class="text-light"><?php echo $class["name"]; ?></span> <span class="text-light"> <?php echo $class["branch_name"]; ?></span>
-                        <?php if ($_SESSION["position"] != "viewer") { ?>
+                        <?php if (!($_SESSION["position"] == "viewer" || $_SESSION["position"] == "student")) { ?>
                             <span>
                                 <a onclick="return confirm('Are you sure, you want to delete the class?')" href="index.php?trash_id=<?php echo $class["class_id"]; ?>"><i class="fas fa-trash ml-3 text-light" style="float: right;"></i></a>
                                 <a href="index.php?edit_id=<?php echo $class["class_id"]; ?>"><i class="fas fa-edit text-light" style="float: right;"></i></a>
