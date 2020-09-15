@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 27, 2020 at 02:09 PM
+-- Generation Time: Sep 15, 2020 at 02:38 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -20,6 +20,22 @@ SET time_zone = "+00:00";
 --
 -- Database: `studentportal`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcements`
+--
+
+CREATE TABLE `announcements` (
+  `announce_id` int(10) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` varchar(2000) NOT NULL,
+  `class_id` int(10) UNSIGNED NOT NULL,
+  `author_id` int(10) UNSIGNED NOT NULL,
+  `edited` tinyint(1) NOT NULL DEFAULT 0,
+  `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -42,7 +58,7 @@ INSERT INTO `branch` (`branch_id`, `branch_name`, `hod_id`, `reg_date`) VALUES
 (1, 'COMPS', NULL, '2020-08-27 12:08:24'),
 (2, 'IT', NULL, '2020-08-27 12:08:24'),
 (3, 'CIVIL', NULL, '2020-08-27 12:08:34'),
-(4, 'EXTC', NULL, '2020-08-27 12:08:34');
+(4, 'EXTC', 5, '2020-09-15 06:17:48');
 
 -- --------------------------------------------------------
 
@@ -56,6 +72,21 @@ CREATE TABLE `class` (
   `subject` varchar(100) NOT NULL,
   `branch_id` int(10) UNSIGNED NOT NULL,
   `teacher_id` int(10) UNSIGNED NOT NULL,
+  `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `comments`
+--
+
+CREATE TABLE `comments` (
+  `comment_id` int(11) NOT NULL,
+  `comment` varchar(1000) DEFAULT NULL,
+  `announce_id` int(10) UNSIGNED NOT NULL,
+  `student_id` int(10) UNSIGNED DEFAULT NULL,
+  `faculty_id` int(10) UNSIGNED DEFAULT NULL,
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -94,6 +125,7 @@ CREATE TABLE `student` (
   `email` varchar(255) NOT NULL,
   `phone` varchar(255) NOT NULL,
   `cgpa` float NOT NULL,
+  `password` varchar(255) NOT NULL,
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -128,6 +160,14 @@ CREATE TABLE `userdetails` (
 --
 
 --
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`announce_id`),
+  ADD KEY `class_id` (`class_id`),
+  ADD KEY `author_id` (`author_id`);
+
+--
 -- Indexes for table `branch`
 --
 ALTER TABLE `branch`
@@ -142,6 +182,15 @@ ALTER TABLE `class`
   ADD PRIMARY KEY (`class_id`),
   ADD KEY `branch_id` (`branch_id`),
   ADD KEY `teacher_id` (`teacher_id`);
+
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`comment_id`),
+  ADD KEY `announce_id` (`announce_id`),
+  ADD KEY `student_id` (`student_id`),
+  ADD KEY `faculty_id` (`faculty_id`);
 
 --
 -- Indexes for table `statuscode`
@@ -177,6 +226,12 @@ ALTER TABLE `userdetails`
 --
 
 --
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `announce_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `branch`
 --
 ALTER TABLE `branch`
@@ -187,6 +242,12 @@ ALTER TABLE `branch`
 --
 ALTER TABLE `class`
   MODIFY `class_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `student`
@@ -205,6 +266,13 @@ ALTER TABLE `userdetails`
 --
 
 --
+-- Constraints for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`),
+  ADD CONSTRAINT `announcements_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `userdetails` (`user_id`);
+
+--
 -- Constraints for table `branch`
 --
 ALTER TABLE `branch`
@@ -216,6 +284,14 @@ ALTER TABLE `branch`
 ALTER TABLE `class`
   ADD CONSTRAINT `class_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `class_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `userdetails` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `comments`
+--
+ALTER TABLE `comments`
+  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`announce_id`) REFERENCES `announcements` (`announce_id`),
+  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`),
+  ADD CONSTRAINT `comments_ibfk_3` FOREIGN KEY (`faculty_id`) REFERENCES `userdetails` (`user_id`);
 
 --
 -- Constraints for table `student_class`

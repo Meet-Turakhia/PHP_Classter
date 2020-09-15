@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
-    <title>Student Portal</title>
+    <title>Classter</title>
 
 </head>
 
@@ -100,8 +100,8 @@
     ?>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-lg">
-        <a class="navbar-brand" href="#" style="font-size: 25px">
-            <i class="fas fa-user-graduate" style="color: #009933;"></i> Student Portal
+        <a class="navbar-brand" href="index.php" style="font-size: 25px">
+            <i class="fas fa-user-graduate" style="color: #009933;"></i> Classter
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -178,7 +178,7 @@
 
         <div class="center">
             <i class="fas fa-user-graduate mt-5" style="color: #009933; font-size: 50px;"></i>
-            <h1 style="color:#009933;" class="ml2">Student Portal</h1>
+            <h1 style="color:#009933;" class="ml2">Classter</h1>
         </div>
 
         <ul class="list-inline center mt-5">
