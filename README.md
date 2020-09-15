@@ -1,5 +1,5 @@
 # PHP Student Portal
-This is a student portal made in php which executes all CRUD commands.
+This is a E-Classroom made in php with college hierarchy which executes all CRUD and many SQL commands.
 Made while learning WDL(Web Development Lab) in Third Year of B.E. Computer Engineering.
 
 ## Tech Stack Used:- 
@@ -20,6 +20,9 @@ selecting their email id from select menu.
 - HOD can create classes of their own branch and can manage the classes of their branch created by various teachers.
 - Admin can manage all the created classes.
 - Viewer can only view all the classes.
+- Teachers,HOD, Admin can make announcements.
+- Students can comment on those announcements.
+- Fully working data integrity between all users and all type of users.
 
 ## How to run project:-
 - import the given studentportal.sql file in your XAMPP server.
