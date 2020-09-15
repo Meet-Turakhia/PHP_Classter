@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 15, 2020 at 02:38 PM
+-- Generation Time: Sep 15, 2020 at 08:26 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `studentportal`
+-- Database: `classter`
 --
 
 -- --------------------------------------------------------
@@ -36,6 +36,14 @@ CREATE TABLE `announcements` (
   `edited` tinyint(1) NOT NULL DEFAULT 0,
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`announce_id`, `title`, `description`, `class_id`, `author_id`, `edited`, `reg_date`) VALUES
+(4, '                             ff           ', '                                  ff      ', 1, 1, 0, '2020-09-15 14:51:46'),
+(5, '                          test kale che have              ', '                                    ane vacahani aavjo\r\n    ', 3, 2, 0, '2020-09-15 18:23:25');
 
 -- --------------------------------------------------------
 
@@ -75,6 +83,14 @@ CREATE TABLE `class` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `class`
+--
+
+INSERT INTO `class` (`class_id`, `name`, `subject`, `branch_id`, `teacher_id`, `reg_date`) VALUES
+(1, 'SE-A', 'DS', 1, 1, '2020-09-15 12:48:22'),
+(3, 'SE-C', 'DS', 1, 2, '2020-09-15 18:22:12');
+
 -- --------------------------------------------------------
 
 --
@@ -87,8 +103,36 @@ CREATE TABLE `comments` (
   `announce_id` int(10) UNSIGNED NOT NULL,
   `student_id` int(10) UNSIGNED DEFAULT NULL,
   `faculty_id` int(10) UNSIGNED DEFAULT NULL,
+  `edited` tinyint(1) NOT NULL DEFAULT 0,
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`comment_id`, `comment`, `announce_id`, `student_id`, `faculty_id`, `edited`, `reg_date`) VALUES
+(1, 'hello boiiiii', 2, NULL, 1, 0, '2020-09-15 13:06:29'),
+(2, '<a href=\"https://getbootstrap.com/docs/4.0/components/forms/\">https://getbootstrap.com/docs/4.0/components/forms/</a>', 2, NULL, 1, 0, '2020-09-15 13:07:36'),
+(3, '<a href=\"https://drive.google.com/file/d/1pj5n1kkLutsuBRz3tzpwExHd-bijpfYv/view\">https://drive.google.com/file/d/1pj5n1kkLutsuBRz3tzpwExHd-bijpfYv/view</a>', 3, NULL, 1, 0, '2020-09-15 13:10:51'),
+(4, 'hi', 1, NULL, 1, 0, '2020-09-15 13:20:32'),
+(5, 'h', 1, NULL, 1, 0, '2020-09-15 13:49:44'),
+(6, 'h', 1, NULL, 1, 0, '2020-09-15 14:04:37'),
+(7, 'h', 1, NULL, 1, 0, '2020-09-15 14:04:54'),
+(8, 'h', 1, NULL, 1, 0, '2020-09-15 14:07:12'),
+(9, 'h', 1, NULL, 1, 0, '2020-09-15 14:08:35'),
+(10, 'h', 1, NULL, 1, 0, '2020-09-15 14:09:13'),
+(11, 'h', 1, NULL, 1, 0, '2020-09-15 14:09:50'),
+(12, 'h', 1, NULL, 1, 0, '2020-09-15 14:11:53'),
+(13, 'h', 1, NULL, 1, 0, '2020-09-15 14:13:02'),
+(14, 'h', 1, NULL, 1, 0, '2020-09-15 14:13:20'),
+(15, 'h', 1, NULL, 1, 0, '2020-09-15 14:13:46'),
+(16, 'h', 1, NULL, 1, 0, '2020-09-15 14:14:00'),
+(17, 'h', 1, NULL, 1, 0, '2020-09-15 14:14:36'),
+(18, 'h', 1, NULL, 1, 0, '2020-09-15 14:15:08'),
+(19, 'h', 1, NULL, 1, 0, '2020-09-15 14:15:52'),
+(20, 'h', 1, NULL, 1, 0, '2020-09-15 14:16:07'),
+(35, 'su vachvanu che?', 5, NULL, 2, 0, '2020-09-15 18:23:42');
 
 -- --------------------------------------------------------
 
@@ -129,6 +173,14 @@ CREATE TABLE `student` (
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `student`
+--
+
+INSERT INTO `student` (`student_id`, `roll_no`, `fullname`, `email`, `phone`, `cgpa`, `password`, `reg_date`) VALUES
+(1, 2, 'Palak desai', 'palak1@gmail.com', '+919999955554', 10, 'b44dda1dadd351948fcace1856ed97366e679239', '2020-09-15 12:50:58'),
+(2, 4, 'Foram', 'palak@gmail.com', '+919999922222', 8.9, 'b44dda1dadd351948fcace1856ed97366e679239', '2020-09-15 18:23:02');
+
 -- --------------------------------------------------------
 
 --
@@ -139,6 +191,14 @@ CREATE TABLE `student_class` (
   `class_id` int(10) UNSIGNED NOT NULL,
   `student_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `student_class`
+--
+
+INSERT INTO `student_class` (`class_id`, `student_id`) VALUES
+(1, 1),
+(3, 2);
 
 -- --------------------------------------------------------
 
@@ -154,6 +214,14 @@ CREATE TABLE `userdetails` (
   `position` char(30) DEFAULT 'viewer',
   `reg_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `userdetails`
+--
+
+INSERT INTO `userdetails` (`user_id`, `username`, `email_id`, `password`, `position`, `reg_date`) VALUES
+(1, 'Meet Turakhia', 'meet@gmail.com', 'b44dda1dadd351948fcace1856ed97366e679239', 'teacher', '2020-09-15 12:47:38'),
+(2, 'Vasantiben', 'vasantiben@gmail.com', 'b44dda1dadd351948fcace1856ed97366e679239', 'teacher', '2020-09-15 18:21:27');
 
 --
 -- Indexes for dumped tables
@@ -229,7 +297,7 @@ ALTER TABLE `userdetails`
 -- AUTO_INCREMENT for table `announcements`
 --
 ALTER TABLE `announcements`
-  MODIFY `announce_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `announce_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `branch`
@@ -241,25 +309,25 @@ ALTER TABLE `branch`
 -- AUTO_INCREMENT for table `class`
 --
 ALTER TABLE `class`
-  MODIFY `class_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `class_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `comment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `student`
 --
 ALTER TABLE `student`
-  MODIFY `student_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `student_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `userdetails`
 --
 ALTER TABLE `userdetails`
-  MODIFY `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
@@ -271,34 +339,6 @@ ALTER TABLE `userdetails`
 ALTER TABLE `announcements`
   ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`),
   ADD CONSTRAINT `announcements_ibfk_2` FOREIGN KEY (`author_id`) REFERENCES `userdetails` (`user_id`);
-
---
--- Constraints for table `branch`
---
-ALTER TABLE `branch`
-  ADD CONSTRAINT `branch_ibfk_1` FOREIGN KEY (`hod_id`) REFERENCES `userdetails` (`user_id`) ON DELETE CASCADE;
-
---
--- Constraints for table `class`
---
-ALTER TABLE `class`
-  ADD CONSTRAINT `class_ibfk_1` FOREIGN KEY (`branch_id`) REFERENCES `branch` (`branch_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `class_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `userdetails` (`user_id`) ON DELETE CASCADE;
-
---
--- Constraints for table `comments`
---
-ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`announce_id`) REFERENCES `announcements` (`announce_id`),
-  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`),
-  ADD CONSTRAINT `comments_ibfk_3` FOREIGN KEY (`faculty_id`) REFERENCES `userdetails` (`user_id`);
-
---
--- Constraints for table `student_class`
---
-ALTER TABLE `student_class`
-  ADD CONSTRAINT `student_class_ibfk_1` FOREIGN KEY (`class_id`) REFERENCES `class` (`class_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `student_class_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `student` (`student_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
