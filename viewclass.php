@@ -750,7 +750,7 @@
                             </a>
                         </div>
                         <div id="<?php echo "section" . $announcement["announce_id"]; ?>" style="display: none;">
-                            <?php $comments = $mysqli->query("SELECT comments.comment, comments.edited, comments.reg_date, comments.comment_id, userdetails.username FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.edited, comments.comment_id, comments.reg_date, student.fullname as username FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id' ORDER BY reg_date ASC");
+                            <?php $comments = $mysqli->query("SELECT comments.comment, comments.edited, comments.reg_date, comments.comment_id, userdetails.username, userdetails.email_id FROM comments INNER JOIN userdetails ON comments.faculty_id = userdetails.user_id WHERE announce_id = '$announce_id' UNION SELECT comments.comment, comments.edited, comments.reg_date, comments.comment_id, student.fullname as username, student.email as email_id FROM comments INNER JOIN student ON comments.student_id = student.student_id WHERE announce_id = '$announce_id' ORDER BY reg_date ASC");
                             while ($comment = $comments->fetch_assoc()) {  ?>
                                 <div style='text-align: left; font-size: 12px;'>
                                     <?php
@@ -758,9 +758,11 @@
                                     ?>
                                     <?php if ($comment["edited"]) { ?>
                                         (edited)
+                                    <?php }
+                                    if ($comment["email_id"] == $_SESSION["email_id"]) { ?>
+                                        <a class="commenteditbutton" onclick="commentedit(<?php echo $comment['comment_id']; ?>)"><i class="fas fa-edit ml-3 text-success"></i></a>
+                                        <a onclick="return confirm('Are you sure, you want to delete the comment?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&commenttrash_id=<?php echo $comment["comment_id"]; ?>"><i class="fas fa-trash ml-3 text-success"></i></a>
                                     <?php } ?>
-                                    <a class="commenteditbutton" onclick="commentedit(<?php echo $comment['comment_id']; ?>)"><i class="fas fa-edit ml-3 text-success"></i></a>
-                                    <a onclick="return confirm('Are you sure, you want to delete the comment?')" href="viewclass.php?class_id=<?php echo $class_id; ?>&commenttrash_id=<?php echo $comment["comment_id"]; ?>"><i class="fas fa-trash ml-3 text-success"></i></a>
                                 </div>
                                 <form action="" method="POST" style="display: none; text-align: left;" id="<?php echo "edit" . $comment["comment_id"] ?>">
                                     <div class="input-group">

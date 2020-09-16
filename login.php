@@ -43,6 +43,7 @@
                     $_SESSION['username'] = $row["fullname"];
                     $_SESSION['position'] = "student";
                     $_SESSION['user_id'] = $row["student_id"];
+                    $_SESSION['email_id'] = $row["email"];
                     header("Location:index.php");
                 } else {
                     $error =  "Invalid username or password ❌";
@@ -57,6 +58,7 @@
                     $_SESSION['username'] = $row["username"];
                     $_SESSION['position'] = $row["position"];
                     $_SESSION['user_id'] = $row["user_id"];
+                    $_SESSION['email_id'] = $row["email_id"];
                     header("Location:index.php");
                 } else {
                     $error =  "Invalid username or password ❌";
