@@ -29,7 +29,7 @@
     }
     $error = NULL;
     $success = NULL;
-    if ($_SESSION["position"] == "teacher") {
+    if ($_SESSION["position"] == "teacher" || $_SESSION["position"] == "hod") {
         $teacher_id = $_SESSION["user_id"];
     }
     if (isset($_POST["submit"])) {
