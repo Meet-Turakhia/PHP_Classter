@@ -205,7 +205,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="email">Email address:</label>
-                                <input type="email" class="form-control" name="email" placeholder="Enter email:" required autocomplete="off">
+                                <input type="email" class="form-control" name="email" placeholder="Enter Email:" required autocomplete="off">
                             </div>
                             <div class="form-group">
                                 <label for="password">Password</label>
