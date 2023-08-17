@@ -1,4 +1,4 @@
-# PHP Student Portal
+# PHP Classter
 This is a E-Classroom made in php with college hierarchy which executes all CRUD and many SQL commands.
 Made while learning WDL(Web Development Lab) in Third Year of B.E. Computer Engineering.
 
