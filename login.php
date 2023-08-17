@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://kit.fontawesome.com/22d43b373b.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
     <title>Login || Register</title>
 
@@ -190,7 +190,8 @@
                             </div>
                             <button type="submit" name="login" class="btn mybtn">Login</button>
                             <h5 style="font-size: 15px;" class="mt-2">Dont have an account?
-                                <span><a id="registerlink">Register</a></span></h5>
+                                <span><a id="registerlink">Register</a></span>
+                            </h5>
                             <?php
                             ?>
                         </form>
@@ -250,7 +251,8 @@
                             <br>
                             <button type="submit" name="register" id="register" class="btn mybtn">Register</button>
                             <h5 style="font-size: 15px;" class="mt-2">Have an account?
-                                <span><a id="loginlink">Login</a></span></h5>
+                                <span><a id="loginlink">Login</a></span>
+                            </h5>
                         </form>
                     </div>
 

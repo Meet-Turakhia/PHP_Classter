@@ -13,7 +13,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script src="https://kit.fontawesome.com/22d43b373b.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
     <title>Class Page</title>
 
@@ -120,13 +120,13 @@
 
     if (isset($_GET["edit_id"])) {
         echo '<script type="text/javascript">',
-            "function editmodal() {
+        "function editmodal() {
         setTimeout(function () {
             $('#myModal').modal({backdrop: 'static', keyboard: false, show:true});
         }, 1000);
         }",
-            'editmodal();',
-            '</script>';
+        'editmodal();',
+        '</script>';
     }
 
     if (isset($_POST["update"])) {
@@ -166,11 +166,11 @@
         if ($result) {
             $success = "announcement made successfully ✔";
             echo '<script type="text/javascript">',
-                "$(document).ready(function() {
+            "$(document).ready(function() {
                 $('#studentsection').hide();
                 $('#announcesection').show();
         });",
-                '</script>';
+            '</script>';
         } else {
             $error = "some error occured, try again ❌";
         }
@@ -182,11 +182,11 @@
         if ($result) {
             $success = "announcement deleted successfully ✔";
             echo '<script type="text/javascript">',
-                "$(document).ready(function() {
+            "$(document).ready(function() {
                 $('#studentsection').hide();
                 $('#announcesection').show();
         });",
-                '</script>';
+            '</script>';
         } else {
             $error = "some error occured, try again ❌";
         }
@@ -194,19 +194,19 @@
 
     if (isset($_GET["announceedit_id"])) {
         echo '<script type="text/javascript">',
-            "$(document).ready(function() {
+        "$(document).ready(function() {
                 $('#studentsection').hide();
                 $('#announcesection').show();
         });",
-            '</script>';
+        '</script>';
         echo '<script type="text/javascript">',
-            "function editannounce() {
+        "function editannounce() {
         setTimeout(function () {
             $('#announceModal').modal({backdrop: 'static', keyboard: false, show:true});
         }, 1000);
         }",
-            'editannounce();',
-            '</script>';
+        'editannounce();',
+        '</script>';
     }
 
     if (isset($_POST["announceupdate"])) {
@@ -234,11 +234,11 @@
             if ($result) {
                 $success = "comment added successfully ✔";
                 echo '<script type="text/javascript">',
-                    "$(document).ready(function() {
+                "$(document).ready(function() {
                      $('#studentsection').hide();
                      $('#announcesection').show();
         });",
-                    '</script>';
+                '</script>';
             } else {
                 $error = "some error occured, try again ❌";
             }
@@ -248,11 +248,11 @@
             if ($result) {
                 $success = "comment added successfully ✔";
                 echo '<script type="text/javascript">',
-                    "$(document).ready(function() {
+                "$(document).ready(function() {
                      $('#studentsection').hide();
                      $('#announcesection').show();
         });",
-                    '</script>';
+                '</script>';
             } else {
                 $error = "some error occured, try again ❌";
             }
@@ -265,11 +265,11 @@
         if ($result) {
             $success = "comment deleted successfully ✔";
             echo '<script type="text/javascript">',
-                "$(document).ready(function() {
+            "$(document).ready(function() {
                 $('#studentsection').hide();
                 $('#announcesection').show();
         });",
-                '</script>';
+            '</script>';
         } else {
             $error = "some error occured, try again ❌";
         }
